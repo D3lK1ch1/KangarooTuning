@@ -1,2 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.vscode/
+.idea/
+tests/__pycache__/
+.DS_Store
 Prompts.md
 Progress.md

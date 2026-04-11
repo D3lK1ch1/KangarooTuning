@@ -1,71 +1,156 @@
-# Integrated In-Tune Hearing Guide for Animals
-Chief user problem specific example: Construction boxing in kangaroos, needing to guide them to an open corridor not from the main road where workers come in and out and responsible for many kangaroo deaths.
+# KangarooTuning
 
-Potential solution: A  hardware system tuning into kangaroo's hearing frequency to guide animals into open corridors, to avoid the main road where workers come in and out.
+A sound-based wildlife guidance simulation for redirecting kangaroos away from construction zones and toward safe corridors — before investing in hardware.
 
-Proof of Concept: Using a simulation model to test demo setup on luring kangaroos from construction zone with setup by using mid-frequency attraction (if possible) and ultrasound repel (more possible) from road.
+> **Status:** Proof-of-concept simulation. Stage 1 (behavior model) partially
+> passing. Stage 2 (rule-based controller) passing. Stage 3 (RL) not yet trained.
+
+---
+
+## Description
+
+Construction sites near wildlife corridors cause kangaroo fatalities when animals wander onto active roads. This project models a hardware-free-first approach:
+tune directional sound emitters to the kangaroo's hearing range to guide herds toward a safe exit corridor, away from the road.
+
+The simulation tests whether acoustic gradient influence is even plausible before any hardware investment is made.
+
+---
+
+## Current Features
+
+- **2D grid simulation** — 50×50 environment with construction zone, road boundary,
+  safe corridor, obstacles, and worker noise sources
+- **Kangaroo behavioral model** — per-agent stress, curiosity, herd cohesion, panic
+  threshold, and velocity
+- **3-band acoustic field** — mid-frequency guide (2–10 kHz), social cue (500 Hz–2 kHz),
+  ultrasonic repeller (>20 kHz) with distance attenuation and wind distortion
+- **Rule-based controller** — hard-coded guidance strategy as a baseline
+- **RL environment scaffold** — Gymnasium-compatible environment for PPO training
+  (untrained)
+- **CLI interface** — `status`, `demo`, `interactive`, `test` modes
+- **ASCII map renderer** — real-time top-down environment view in terminal
+- **Test suite** — Stage 1–3 pytest tests with documented expected outcomes
+
+---
+
+## Built With
+
+| Library | Purpose |
+|---|---|
+| Python 3.x | Core language |
+| numpy | Grid math, vector calculations |
+| matplotlib | Plotting (optional) |
+| pygame | Graphical display (optional) |
+| stable-baselines3 | PPO reinforcement learning |
+| gymnasium | Custom RL environment |
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
+Python 3.8+ recommended.
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### Simulation Mode
+pygame and stable-baselines3 are optional — the core simulation runs without them.
 
+### Installation
+
+```bash
+git clone <repo-url>
+cd KangarooTuning
+pip install -r requirements.txt
+```
+
+Verify setup:
+
+```bash
 python main.py status
-- check system status and verify software
-
-python main.py demo 
-- automated demo of luring behavior
-
-python main.py interactive
-- For a more interactive experience
-
-python main.py test
-- For the test templates
+```
 
 ---
 
+## Usage
 
-### Real Mode (Hardware Integration) - Planned
+```bash
+# Check dependencies and system status
+python main.py status
 
-Hardware integration requires additional setup. To enable when ready, if simulation results are good and in need of more tweaking:
+# Watch an automated demo of the guidance attempt
+python main.py demo
 
-1. **Connect Hardware** - Configure in `config.py`:
+# Control the simulation interactively (beam angle, intensity, ultrasound toggle)
+python main.py interactive
+
+# Run the full pytest test suite
+python main.py test
+```
+
+### Interactive Commands
+
+| Command | Description |
+|---|---|
+| `status` | Show herd position, stress, zone |
+| `map` | Print ASCII environment map |
+| `step [N]` | Advance simulation N steps |
+| `beam angle DEG` | Set mid-freq beam angle |
+| `beam intensity 0-1` | Set mid-freq intensity |
+| `ultrasound on/off` | Toggle ultrasonic repeller |
+| `social on/off` | Toggle social cue emitter |
+| `reset` | Reset to initial state |
+| `demo` | Run automated demo |
+| `exit` | Quit |
+
+---
+
+## Roadmap
+
+- [ ] **Fix acoustic response bug** — kangaroos not responding to sound stimuli
+  (root cause: `AcousticEnvironment` not syncing from `AcousticField`)
+- [ ] **Stage 1 passing** — acoustic gradient influence and ultrasonic repulsion tests
+- [ ] **RL training** — train PPO controller, target >80% safe exit rate
+- [ ] **Sensitivity analysis** — test curiosity, herd cohesion, gradient strength
+- [ ] **Baseline comparison** — random walk vs acoustic-guided to prove influence is real
+- [ ] **Monte Carlo runs** — multiple seeds, statistical validation
+- [ ] **Hardware prototype** — Raspberry Pi + directional speaker + PIR sensor
+- [ ] **Field testing** — requires wildlife permit and ethics clearance
+
+### Hardware Integration (Planned)
+
+When simulation results are validated, hardware setup requires:
+
+1. **Connect Hardware** — configure in `config.py`:
    ```python
-   # config.py
    REAL_MODE = True
    GPIO_PINS = {
-       'mid_freq_emitter': 18,    # 8-16kHz directional speaker
-       'ultrasound_emitter': 23, # 25kHz+ repeller
-       'pir_sensor': 24,         # Motion detection
+       'mid_freq_emitter': 18,    # 8–16 kHz directional speaker
+       'ultrasound_emitter': 23,  # 25 kHz+ repeller
+       'pir_sensor': 24,          # Motion detection
    }
    ```
 
 2. **Create hardware interface** (create `real_hardware.py`):
    ```python
-   # real_hardware.py - Template for GPIO control
    import RPi.GPIO as GPIO
-   
+
    class HardwareInterface:
        def __init__(self, pins):
            GPIO.setmode(GPIO.BCM)
            for name, pin in pins.items():
                GPIO.setup(pin, GPIO.OUT if 'emitter' in name else GPIO.IN)
-       
+
        def read_sensors(self):
-           # Read PIR/thermal sensors
-           pass
-       
+           pass  # Read PIR/thermal sensors
+
        def emit_sound(self, acoustic_field):
-           # Control speakers based on acoustic_field state
-           pass
+           pass  # Control speakers based on acoustic_field state
    ```
 
-4. **Safety Checklist**:
+3. **Safety checklist**:
    - [ ] Test speakers at low volume first
    - [ ] Monitor animal behavior continuously
    - [ ] Stop immediately if distress signs observed
@@ -74,39 +159,20 @@ Hardware integration requires additional setup. To enable when ready, if simulat
 
 ---
 
-## Features
-* Two sensors, around the construction place. One at the center heard at a large range around for lost kangaroos, and the other near the corridor meant for kangaroos to pass through.
+## Research Notes
 
-* The center sensor is a passive receiver, and the other one is a transmitter, which is tuned into the kangaroo's hearing frequency to guide them to the corridor.
+- Eastern grey kangaroo amplification: 1–18 kHz, peak sensitivity 2–3.5 kHz
+- Can hear above 20 kHz but sensitivity drops sharply above 18 kHz
+- Foot thump frequency below 7 kHz — signals predator threat, increases herd vigilance
+- No confirmed attraction sound found — natural vocalizations are for interactions, fights, or flight, not approach
+- Existing deterrents (Roo Guard, Shu Roo, Roobadge) show mixed or no proven results
+- Habituation is a known risk — animals adapt to repeated artificial stimuli over time
+- Outdoor sound dispersion and construction background noise are unresolved challenges
 
-* The center sensor lures the kangaroos to the center of the construction place at first, for the other sensor guides the kangaroos to the corridor.
+---
 
-## Configurations
-* Python? Works well with a lot of hardware systems
-* Hardware types: Microcontroller, Transmitter, Receiver, Sensor, Actuator (Searching for potential setups close to problem-solution)
-* Sensor Layer - PIR, Thermal cameras, LiDAR, CV
-* Guidance layer - Directional sound emitters etc
-* Control layer - Feedback loop behaviour monitoring, reinforcement path shaping
+## License
 
-## Research
-### Questions
-* What are the frequencies that kangaroos can hear to attract vs. repel -Eastern grey kangaroo amplification btwn 1 - 18kHZ, sensitivity btwn 2 - 3.5kHz. Can hear above 20kHz but sensitivity >18kHz greatly reduced. Foot thump signal frequency below 7kHz, directed at predator and increasing vigiance levels amongst kangaros to take flight. Artificial deterrents lose efficacy over time because animals become habituated. Have yet to find sound that attracts kangaroos, when natural sounds for interactions, fights and flights away, but not towards. 
-* Can sound guide movement reliably in open environments? - Outdoors have natural elements and dispersing quickly with background noises. ... They use a construction site, meaning a lot of background noise. Can ultrasound be separated from that?
-* What has already been tried for the kangaroo problem? - Roo Guard and Shu Roo - mixed opinion but statistics aren't showing their effectiveness against repelling away kangaroos. Whistlers to whistle ultrasonically to clear animals out of the way. Roobadge, for cars to prevent collisions with kangaroos, a few are tentatively hopeful but admit none of the ventures have worked over the years.
-* How kangaroos respond to directional sound cues - see above
-* Ethical and legal restrictions
+TBD
 
-For auditory detterant, audible to target species at best hearing frequency, meaningful such as an alarm signal, generate flight response and sufficient time btwn playing auditory stimulus and target species response. Sufficient intensity.
-
-If auditory does not work, visually. Virtual fencing, but works at dawn, dusk and night. What about day?
-
-## Progress Summary
-Working on testing the concept, as a simulation before any full AI or hardware investment with detailed kangaroo model about stress, curiosity, herd cohesion, panic threshold using mid-frequency guide, social cue and ultrasonic to guide kangarros to the corridor.
-
-Potential gaps mentioned in research would be unproven attraction sound, tested that if acoustic gradient influence doesn't work, then the concept is flawed. Habituation is not modeled, and still working on ethical / legality for this project. How outdoor dispersion may affect this project.
-
-According to tests, the acoustic gradient influence for attraction and ultrasonic repulsion failed even though repulsion should technically be possible considering there is research to back up. Will further read up and check on code or else re-evaluate. 
-
-Needing to test whether herd reaches to the corridor in construction zone in time?
-
-Contributions and feedback are always welcome for this proof of concept.
+---

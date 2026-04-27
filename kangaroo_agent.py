@@ -158,8 +158,9 @@ class Herd:
         return sum(a.get_stress() for a in self.agents) / len(self.agents)
     
     def step_all(self, acoustic_environment, acoustic_field):
+        acoustic_environment.update_acoustic_fields(acoustic_field)
         herd_center = self.get_herd_center()
-        
+
         for agent in self.agents:
             stimuli = agent.perceive_local_stimuli(
                 acoustic_environment.get_local_acoustics(agent.x, agent.y),

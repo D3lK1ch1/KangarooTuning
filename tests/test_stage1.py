@@ -30,7 +30,8 @@ class TestStage1:
         angle = np.arctan2(25 - 25, 45 - 5)
         acoustic_field.set_mid_freq_beam(angle, 0.8, (5, 25))
         acoustic_field.update_fields()
-        
+        acoustic_env.update_acoustic_fields(acoustic_field)
+
         kangaroo = KangarooAgent(5, 25)
         
         initial_x = kangaroo.x
@@ -77,7 +78,8 @@ class TestStage1:
         acoustic_field.set_ultrasound(True, 0.9)
         acoustic_field.ultrasound_origin = (38, 25)
         acoustic_field.update_fields()
-        
+        acoustic_env.update_acoustic_fields(acoustic_field)
+
         kangaroo = KangarooAgent(35, 25)
         
         initial_x = kangaroo.x

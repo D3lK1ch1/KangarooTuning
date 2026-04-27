@@ -25,6 +25,7 @@ class SimulationRunner:
     def get_state(self):
         herd_center = self.herd.get_herd_center()
         return {
+            "herd_center": herd_center,
             "distance_to_corridor": self.acoustic_env.distance_to_corridor(
                 herd_center[0], herd_center[1]
             ),

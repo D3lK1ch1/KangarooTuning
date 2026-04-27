@@ -2,14 +2,13 @@
 
 A sound-based wildlife guidance simulation for redirecting kangaroos away from construction zones and toward safe corridors — before investing in hardware.
 
-> **Status:** Proof-of-concept simulation. Stage 1 (behavior model) partially
-> passing. Stage 2 (rule-based controller) passing. Stage 3 (RL) not yet trained.
+> **Status:** Proof-of-concept simulation. Pending field data, with simulation architecture built and bug-fixed. Behavioral parameters is guessed from quick research about kangaroo habits and how they react on auditory cues. Validation requires real kangaroo data, unable to get.
 
 ---
 
 ## Description
 
-Construction sites near wildlife corridors cause kangaroo fatalities when animals wander onto active roads. This project models a hardware-free-first approach:
+Construction sites near wildlife corridors cause kangaroo fatalities when animals wander onto active roads, applying as well to sites with many kangaroos. This project models a hardware-free-first approach:
 tune directional sound emitters to the kangaroo's hearing range to guide herds toward a safe exit corridor, away from the road.
 
 The simulation tests whether acoustic gradient influence is even plausible before any hardware investment is made.
@@ -109,9 +108,9 @@ python main.py test
 
 ## Roadmap
 
-- [ ] **Fix acoustic response bug** — kangaroos not responding to sound stimuli
+- [x] **Fix acoustic response bug** — kangaroos not responding to sound stimuli
   (root cause: `AcousticEnvironment` not syncing from `AcousticField`)
-- [ ] **Stage 1 passing** — acoustic gradient influence and ultrasonic repulsion tests
+- [x] **Stage 1 passing** — acoustic gradient influence and ultrasonic repulsion tests
 - [ ] **RL training** — train PPO controller, target >80% safe exit rate
 - [ ] **Sensitivity analysis** — test curiosity, herd cohesion, gradient strength
 - [ ] **Baseline comparison** — random walk vs acoustic-guided to prove influence is real
@@ -168,6 +167,9 @@ When simulation results are validated, hardware setup requires:
 - Existing deterrents (Roo Guard, Shu Roo, Roobadge) show mixed or no proven results
 - Habituation is a known risk — animals adapt to repeated artificial stimuli over time
 - Outdoor sound dispersion and construction background noise are unresolved challenges
+
+## Known Limitations
+- Behavioural parameters are not field-validated such as stress accumulation, curiosity response and acoustic sensitivity curves estimated from the quick skim research and cannot be taken as fact, so while the architecture may be sound but without true testing lacking bias, the POC cannot truly be verified. The test gaps reflecting that would be test 1_1 (acoustic gradient influence), test 1_2 (ultrasonic repulsion) and test 2_2 (corridor guidance)
 
 ---
 

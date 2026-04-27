@@ -31,7 +31,7 @@ class Visualizer:
                     grid[y, x] += [ultra_int * 0.5, 0, ultra_int * 0.5]
         
         grid = np.clip(grid, 0, 1)
-        return (grid * 255).astype(np.uint8)
+        return grid
     
     def render_agents(self, grid):
         for agent in self.herd.agents:
@@ -46,12 +46,12 @@ class Visualizer:
         grid = self.render_agents(grid)
         return (grid * 255).astype(np.uint8)
     
-    def print_state(self):
+    def print_state(self, step=0):
         herd_center = self.herd.get_herd_center()
         zone = self.acoustic_env.get_zone_at(herd_center[0], herd_center[1])
-        
+
         print(f"\n=== Simulation State ===")
-        print(f"Step: {0}")
+        print(f"Step: {step}")
         print(f"Herd Center: ({herd_center[0]:.1f}, {herd_center[1]:.1f})")
         print(f"Zone: {zone}")
         print(f"Average Stress: {self.herd.get_average_stress():.2f}")

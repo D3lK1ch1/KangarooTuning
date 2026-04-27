@@ -66,6 +66,7 @@ class TestStage3:
         """Compare RL performance to rule-based (untrained)"""
         try:
             from controller_rl import RLController
+            from controller_rl import KangarooTuningEnv
             
             rl_controller = RLController()
             

@@ -64,9 +64,18 @@ STRESS_PANIC_PENALTY = -3.0
 HERD_FRAGMENT_PENALTY = -1.0
 CORRIDOR_PROXIMITY_REWARD = 1.0
 
+# When hardware integration may or may not happen
 REAL_MODE = False
 GPIO_PINS = {
     'mid_freq_emitter': 18,
     'ultrasound_emitter': 23,
     'pir_sensor': 24,
+}
+
+RL_ACTION_MAP = {
+    0: "increase intensity",
+    1: "decrease_intensity",
+    2: "rotate_beam_left",
+    3: "rotate_beam_right",
+    4: "toggle ultrasound",
 }

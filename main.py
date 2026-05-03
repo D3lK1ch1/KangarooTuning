@@ -19,29 +19,19 @@ import config
 
 class SoundEmulator:
     """Software-only sound emulator for simulation mode"""
-    
-    def __init__(self):
-        self.mid_freq_active = False
-        self.ultrasound_active = False
-        self.mid_freq_intensity = 0.0
-        self.ultrasound_intensity = 0.0
         
     def emit_mid_freq(self, intensity, angle):
-        self.mid_freq_active = intensity > 0
-        self.mid_freq_intensity = intensity
-        return f"Mid-freq {'ON' if self.mid_freq_active else 'OFF'} (intensity={intensity:.0%}, angle={np.degrees(angle):.0f}°)"
+        is_active = intensity > 0
+        return f"Mid-freq{'ON' if is_active else 'OFF'} (intensity={intensity:.0%}, angle={np.degrees(angle):.0f}°)"
     
     def emit_ultrasound(self, intensity):
-        self.ultrasound_active = intensity > 0
-        self.ultrasound_intensity = intensity
-        return f"Ultrasound {'ON' if self.ultrasound_active else 'OFF'} (intensity={intensity:.0%})"
-    
+        is_active = intensity > 0
+        return f"Ultrasound {'ON' if is_active else 'OFF'} (intensity={intensity:.0%})"
+  
     def emit_social_cue(self, intensity):
         return f"Social cue {'ON' if intensity > 0 else 'OFF'} (intensity={intensity:.0%})"
     
     def stop_all(self):
-        self.mid_freq_active = False
-        self.ultrasound_active = False
         return "All emitters stopped"
 
 
@@ -186,8 +176,8 @@ class KangarooTuningCLI:
         print(f"  Zone:           {zone}")
         print(f"  Avg stress:     {self.herd.get_average_stress():.2f}")
         print(f"  Dispersion:     {self.herd.get_herd_dispersion():.2f}")
-        print(f"  Mid-freq beam:  {self.emulator.mid_freq_active} (int={self.emulator.mid_freq_intensity:.0%}, angle={np.degrees(self.acoustic_field.beam_angle):.0f}°)")
-        print(f"  Ultrasound:     {self.emulator.ultrasound_active} (int={self.emulator.ultrasound_intensity:.0%})")
+        print(f"  Mid-freq beam:  {self.acoustic_field.beam_intensity > 0} (int={self.acoustic_field.beam_intensity:.0%}, angle={np.degrees(self.acoustic_field.beam_angle):.0f}°)")
+        print(f"  Ultrasound:     {self.acoustic_field.ultrasound_active} (int={self.acoustic_field.ultrasound_intensity:.0%})")
         
     def run_demo(self, num_steps=50):
         """Run automated demo showing luring behavior"""

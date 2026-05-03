@@ -106,15 +106,7 @@ class KangarooTuningEnv(gym.Env):
         
         previous_state = self._get_state()
         
-        action_map = {
-            0: "increase_intensity",
-            1: "decrease_intensity",
-            2: "rotate_beam_left",
-            3: "rotate_beam_right",
-            4: "toggle_ultrasound",
-        }
-        
-        action_name = action_map.get(action, "increase_intensity")
+        action_name = config.RL_ACTION_MAP.get(action, "increase_intensity")
         
         if action_name == "increase_intensity":
             new_intensity = min(1.0, self.acoustic_field.beam_intensity + 0.1)

@@ -40,16 +40,38 @@ class SimulationRunner:
     def run_step(self):
         state = self.get_state()
         
-        if hasattr(self.controller, 'get_action'):
-            if hasattr(self.controller, RLController):
-                action = self.controller.get_action(state)
-                self._apply_rl_action(action)
-            else:
-                action = self.controller.get_action(state)
-                self.controller.apply_action(action, self.acoustic_field)
+        if isinstance(self.controller, RLController):
+            action = self.controller.get_action(state)
+            self._apply_rl_action(action)
+            action_name = config.RL_ACTION_MAP.get(action, "increase_intensity")
+        
+            if action_name == "increase_intensity":
+                new_intensity = min(1.0, self.acoustic_field.beam_intensity + 0.1)
+                self.acoustic_field.set_mid_freq_beam(
+                    self.acoustic_field.beam_angle, new_intensity
+                )
+            elif action_name == "decrease_intensity":
+                new_intensity = max(0.0, self.acoustic_field.beam_intensity - 0.1)
+                self.acoustic_field.set_mid_freq_beam(
+                    self.acoustic_field.beam_angle, new_intensity
+                )
+            elif action_name == "rotate_beam_left":
+                new_angle = self.acoustic_field.beam_angle - 0.1
+                self.acoustic_field.set_mid_freq_beam(
+                    new_angle, self.acoustic_field.beam_intensity
+                )
+            elif action_name == "rotate_beam_right":
+                new_angle = self.acoustic_field.beam_angle + 0.1
+                self.acoustic_field.set_mid_freq_beam(
+                    new_angle, self.acoustic_field.beam_intensity
+                )
+            elif action_name == "toggle_ultrasound":
+                new_state = not self.acoustic_field.ultrasound_active
+                self.acoustic_field.set_ultrasound(new_state, 0.9)
         else:
-            self.controller.apply_action(state, self.acoustic_field)
-            
+            action = self.controller.get_action(state)
+            self.controller.apply_action(action, self.acoustic_field)
+
         self.herd.step_all(self.acoustic_env, self.acoustic_field)
         
         self.step_count += 1
@@ -63,32 +85,6 @@ class SimulationRunner:
             "beam_angle": self.acoustic_field.beam_angle,
         })
         
-        
-        action_name = config.RL_ACTION_MAP.get(action, "increase_intensity")
-        
-        if action_name == "increase_intensity":
-            new_intensity = min(1.0, self.acoustic_field.beam_intensity + 0.1)
-            self.acoustic_field.set_mid_freq_beam(
-                self.acoustic_field.beam_angle, new_intensity
-            )
-        elif action_name == "decrease_intensity":
-            new_intensity = max(0.0, self.acoustic_field.beam_intensity - 0.1)
-            self.acoustic_field.set_mid_freq_beam(
-                self.acoustic_field.beam_angle, new_intensity
-            )
-        elif action_name == "rotate_beam_left":
-            new_angle = self.acoustic_field.beam_angle - 0.1
-            self.acoustic_field.set_mid_freq_beam(
-                new_angle, self.acoustic_field.beam_intensity
-            )
-        elif action_name == "rotate_beam_right":
-            new_angle = self.acoustic_field.beam_angle + 0.1
-            self.acoustic_field.set_mid_freq_beam(
-                new_angle, self.acoustic_field.beam_intensity
-            )
-        elif action_name == "toggle_ultrasound":
-            new_state = not self.acoustic_field.ultrasound_active
-            self.acoustic_field.set_ultrasound(new_state, 0.9)
             
         self.acoustic_field.update_fields()
     

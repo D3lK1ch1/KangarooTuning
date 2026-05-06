@@ -42,6 +42,10 @@ class TestStage2:
         Conditions: distance_to_corridor > 10
         Action: beam_direction points to corridor
         Expected: Kangaroo reduces distance_to_corridor
+        Known gap: Fails with default parameters. Starting distance of 40 grid units 
+        exceeds effective beam range given DISTANCE_ATTENUATION_FACTOR. Behavioral 
+        parameters (curiosity, attenuation) are not field-validatted - this reflects 
+        a real limitation of the POC, not a code bug.
         """
         runner = SimulationRunner(controller=RuleBasedController())
         

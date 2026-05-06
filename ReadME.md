@@ -169,7 +169,16 @@ When simulation results are validated, hardware setup requires:
 - Outdoor sound dispersion and construction background noise are unresolved challenges
 
 ## Known Limitations
-- Behavioural parameters are not field-validated such as stress accumulation, curiosity response and acoustic sensitivity curves estimated from the quick skim research and cannot be taken as fact, so while the architecture may be sound but without true testing lacking bias, the POC cannot truly be verified. The test gaps reflecting that would be test 1_1 (acoustic gradient influence), test 1_2 (ultrasonic repulsion) and test 2_2 (corridor guidance)
+
+- Behavioural parameters are not field-validated — stress accumulation rate, curiosity
+  response, and acoustic sensitivity curves are estimated from research and cannot be
+  taken as fact. The architecture is sound but results cannot be verified without real data.
+- `test_2_2` (corridor guidance) fails by design at current parameters. Starting distance
+  of 40 grid units exceeds the effective beam range given the attenuation factor. Requires
+  field-calibrated curiosity and attenuation values to pass — not a code bug.
+- No attraction sound confirmed in research — mid-frequency attraction is an untested assumption.
+- Habituation not modelled — animals adapt to repeated artificial stimuli over time.
+- Outdoor sound dispersion and construction background noise are unresolved challenges.
 
 ---
 
